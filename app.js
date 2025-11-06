@@ -5,15 +5,12 @@
 // @description  try to take over gdut!
 // @author       Me
 // @match        https://jxfw.gdut.edu.cn/login!welcome.action
-// @icon         https://tiebapic.baidu.com/forum/w%3D580%3B/sign=2a1a7a8d23380cd7e61ea2e5917fac34/cf1b9d16fdfaaf5169ba0482ca5494eef01f7ab6.jpg?tbpicau=2025-10-08-05_97d933a2b879cce43be748e5cd945bcc
+// @icon         https://tiebapic.baidu.com/forum/w%3D580%3B/sign=8475f53d707adab43dd01b4bbbefb21c/279759ee3d6d55fbce9730332b224f4a20a4dd56.jpg?tbpicau=2025-11-18-05_9b9d83edb0ac0374b29ba9dcdc2744c9
 // @grant        none
 // ==/UserScript==
 
 (function () {
     'use strict';
-
-    // Your code here...
-    // 配置
     const TABS_CONTAINER_SELECTOR = 'ul.tabs';
     const TAB_ITEM_SELECTOR = 'li';
     const TAB_LINK_SELECTOR = 'a[href="javascript:void(0)"]';
@@ -98,17 +95,16 @@
     }
     // 自定义处理函数
     async function handleCourseSelectionTab() {
-        console.log('处理"个人选课"标签');
+        console.log('处理"个人选课"标签');
         if (document.getElementById('tm-datagrid-extractor-window')) {
             console.log("窗口已创建");
-            // 窗口已创建，不需要重复创建。关闭窗口只是将窗口隐藏 document.getElementById('tm-datagrid-extractor-window').style.display = '';
-            return document.getElementById('tm-datagrid-extractor-window'); // 停止创建窗口，直接返回
+            document.getElementById('tm-datagrid-extractor-window').style.display = '';
+            return document.getElementById('tm-datagrid-extractor-window');
         }
 
         var floatingWindow = document.createElement('div');
         floatingWindow.id = 'tm-datagrid-extractor-window';
-        
-        // 创建窗口本体
+
         floatingWindow.style.cssText = `
             position: fixed;
             top: 10px;
@@ -121,7 +117,6 @@
             z-index: 10000;
             overflow: auto;
         `;
-
         // 创建窗口标题栏
         const windowHeader = document.createElement('div');
         windowHeader.style.cssText = `
@@ -134,12 +129,10 @@
             align-items: center;
         `;
 
-        // 创建窗口头
         const windowTitle = document.createElement('div');
-        windowTitle.textContent = '广工抢课助手';
+        windowTitle.textContent = '广工选课助手';
         windowTitle.style.fontWeight = 'bold';
 
-        // 创建关闭按钮
         const closeBtn = document.createElement('button');
         closeBtn.textContent = '×';
         closeBtn.style.cssText = `
@@ -168,7 +161,6 @@
             justify-content: start;
         `;
 
-        // 创建表格元素
         const tableElement = document.createElement('div');
         tableElement.style.cssText = `
             overflow - y: auto;
@@ -178,7 +170,6 @@
             justify - content: start;
         `;
 
-        // 指示文本
         var inputPrompt = document.createElement('td');
         inputPrompt.textContent = "等待表格输入";
         inputPrompt.style.cssText = `
@@ -198,14 +189,13 @@
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         `;
-
         // 提取表格函数
         extractButton.addEventListener('click', () => {
             try {
                 selectList = [];
                 const iframes = document.getElementsByTagName('iframe');
                 for (var i = 0; i < iframes.length; i++) {
-                    console.log("找到的第", i, "个iframes: ", iframes[i].contentDocument);
+                    console.log("找到的第 ", i, " 个iframes: ", iframes[i].contentDocument);
                 }
                 const iframeDocument = iframes[0].contentDocument;
                 if (iframeDocument === null) {
@@ -220,7 +210,6 @@
                 waitForElement(iframeDocument, ".datagrid-btable")
                     .then(element => {
                         console.log('找到元素:', element);
-                        // 在这里处理元素
                         originalTableElement = element;
                         if (originalTableElement === null) {
                             console.log('未找到表格！');
@@ -229,34 +218,41 @@
                         console.log("已找到表格：", originalTableElement);
                         inputPrompt.textContent = "已找到表格";
 
-                        const count = originalTableElement.children[0].childElementCount; // 原表格的行数
+                        let count = originalTableElement.children[0].childElementCount; // 原表格的行数
+                        console.log("原表格行数：", count);
 
                         // 表格内容为空时，添加样例，此模块可删除
                         if (count == 0) {
                             inputPrompt.textContent += "  提示：表格的内容似乎为空，或需要关闭其他页面 创建了示例表格";
-                            const exampleTableRow = document.createElement('tr');
-                            exampleTableRow.style.padding = "0px 10px";
+                            let exampleTableRow1 = document.createElement('tr');
+                            exampleTableRow1.style.padding = "0px 10px";
 
-                            exampleTableRow.appendChild(createCustomTDString("osu!course: How to play jump map"));
-                            exampleTableRow.appendChild(createCustomTDString("40"));
-                            exampleTableRow.appendChild(createCustomTDString("mrekk"));
-                            exampleTableRow.appendChild(createCustomTDString("限选信息"));
-                            exampleTableRow.appendChild(createCustomTDString("已选信息"));
-                            exampleTableRow.appendChild(createCustomTDString("osu!"));
-                            exampleTableRow.appendChild(createCustomTDString("osu!course"));
-                            exampleTableRow.appendChild(createCustomTDString("模拟选课按钮"));
+                            exampleTableRow1.appendChild(createCustomTDString(""));
+                            exampleTableRow1.appendChild(createCustomTDString(""));
+                            exampleTableRow1.appendChild(createCustomTDString(""));
+                            exampleTableRow1.appendChild(createCustomTDString("osu!course: How to play jump map"));
+                            exampleTableRow1.appendChild(createCustomTDString("7.27"));
+                            exampleTableRow1.appendChild(createCustomTDString("mrekk"));
+                            exampleTableRow1.appendChild(createCustomTDString("限选信息"));
+                            exampleTableRow1.appendChild(createCustomTDString("已选信息"));
+                            exampleTableRow1.appendChild(createCustomTDString("osu!"));
+                            exampleTableRow1.appendChild(createCustomTDString("osu!course"));
+                            exampleTableRow1.appendChild(createCustomTDString("模拟选课按钮"));
 
-                            const HasSelected = document.createElement('td');
-                            HasSelected.textContent = "";
+                            // 复制两份
+                            let exampleTableRow2 = exampleTableRow1.cloneNode(true);
 
-                            const exampleTableElement = document.createElement('table');
-                            const exampleTableBody = document.createElement('tbody');
-                            exampleTableBody.appendChild(exampleTableRow);
+                            let exampleTableElement = document.createElement('table');
+                            let exampleTableBody = document.createElement('tbody');
+                            exampleTableBody.appendChild(exampleTableRow1);
+                            exampleTableBody.appendChild(exampleTableRow2);
 
                             exampleTableElement.appendChild(exampleTableBody);
 
                             originalTableElement = exampleTableElement;
+                            count = 2;
                         }
+                        console.log("originalTableElement: ", originalTableElement);
                         
                         let clonedTable = originalTableElement.cloneNode(true); // 克隆表格以避免影响原表格，使用深度克隆以获取所有子元素
                         let targetTable = document.createElement('table'); // 创建表格元素
@@ -278,17 +274,18 @@
                         for (let i = 0; i < count; i++) {
                             // clonedTable是table，其firstElementChild是table-body，children[i]是第i行
                             const tableTableRow = clonedTable.firstElementChild.children[i]; 
-                            //console.log("tableTableRow: ", tableTableRow);
+                            // console.log("tableTableRow: ", tableTableRow);
 
                             // 各种信息在表格中具有固定子元素位置，对应关系如下：
                             // 3: 课程名称在 4: 学分 5: 教师 6: 限选人数 7: 已选人数 8: 课程大类 9: 课程分类 10: 选课操作。0，1，2是空的，暂时不知为何。
-                            // 需要获取限选人数和已选人数来判断课程是否已选满。获取的是td内div元素的textContent
+                            // 需要获取限选人数和已选人数来判断课程是否已选满，所以获取的是td内div元素的textContent
                             const courseName = tableTableRow.children[3];
                             const score = tableTableRow.children[4];
                             const teacher = tableTableRow.children[5];
                             const selectLimitCount = tableTableRow.children[6].firstElementChild.textContent; 
                             const hasSelectedCount = tableTableRow.children[7].firstElementChild.textContent;
-                            let prompt = "-"; // 对应当前行的‘备注’一列
+
+                            let prompt = "-"; // 将填充至当前行的‘备注’一列
                             if (selectLimitCount == hasSelectedCount) {
                                 prompt = "由于选课人数与限选人数相等，该课程可能无法选择";
                                 console.log("由于选课人数与限选人数相等，可能永远无法选择课程。当前选课序号：", i)
@@ -299,15 +296,16 @@
                             orderIndexControl.disabled = true; // 选中该课程时才会启用
                             orderIndexControl.addEventListener('input', function () {
                                 let target = orderIndexControl.value; 
-                                if (target < selectList.length) { // 神之javascript不需要我转换类型
+                                if (target <= selectList.length) {
                                     //orderIndexControl.style.borderColor = "#EB1F61";
                                     let original = selectList.indexOf(i);
                                     console.log("交换列表 ", target, " 和 ", original, " 的位置");
                                     [selectList[target], selectList[original]] = [selectList[original], selectList[target]];
+                                    console.log("selectList:", selectList);
                                 }
-                                else {
-                                    //orderIndexControl.style.borderInlineColor = "#EB1F61"
-                                }
+                                //else {
+                                //    //orderIndexControl.style.borderInlineColor = "#EB1F61"
+                                //}
                             });
 
                             // 添加是否选择课程控件
@@ -316,25 +314,20 @@
                             checkBoxControl.addEventListener('change', function () {
                                 if (this.checked) {
                                     addTableRow.style.backgroundColor = '#FFFED9'
-                                    let index = selectList.indexOf(i);
-                                    if (index == -1) {
+                                    let target = orderIndexControl.value;
+
+                                    // 只能简单处理位置顺序，选择次数很多时会乱，选一次足矣
+                                    if (target != "" && target - 1 < selectList.length) {
+                                        console.log("添加序号 ", i, " 到选择列表 ", target - 1, " 索引处");
+                                        selectList.splice(target - 1, 0, i);
+                                    }
+                                    else {
                                         console.log("添加序号 ", i, " 到选择列表末尾");
                                         selectList.push(i);
+                                        orderIndexControl.value = selectList.length;
                                     }
-                                    if (orderIndexControl.value != "") {
-                                        //console.log("序号控制的内容不为空！读取到：", orderIndexControl.value);
-                                        let target = parseInt(orderIndexControl.value);
-                                        let original = i;
-                                        if (target < selectList.length) {
-                                            //console.log("交换列表 ", target, " 和 ", original, " 的位置");
-                                            //let temp = selectList[target];
-                                            //selectList[target] = selectList[original];
-                                            //selectList[original] = temp;
-                                        }
-                                    }
-                                    orderIndexControl.value = i;
-                                    orderIndexControl.disabled = false;
                                     
+                                    orderIndexControl.disabled = false;
                                 }
                                 else {
                                     addTableRow.style.backgroundColor = '#FFFFFF'
@@ -456,13 +449,13 @@
             iframe.addEventListener('load', onIframeLoaded);
             const iframeDocument = iframe.contentDocument;
 
-            // 开始检测流程，检测iframe，选课按钮，刷新按钮
+            // 开始检测流程
             startDetection();
 
             async function startDetection() {
                 if (!doSelectingCourse) return;
 
-                // 每次检测都重新获取iframeDocument，因为刷新后的iframe是新的
+                // 每次检测都重新获取iframeDocument
                 let iframeDocument;
                 try {
                     iframeDocument = iframe.contentDocument;
