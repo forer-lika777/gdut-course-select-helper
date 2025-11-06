@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         ¹ã¶«¹¤Òµ´óÑ§Ñ¡¿ÎÖúÊÖ (¹ã¹¤ÇÀ¿Î)
+// @name         å¹¿ä¸œå·¥ä¸šå¤§å­¦é€‰è¯¾åŠ©æ‰‹ (å¹¿å·¥æŠ¢è¯¾)
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-23
 // @description  try to take over gdut!
@@ -13,57 +13,57 @@
     'use strict';
 
     // Your code here...
-    // ÅäÖÃ
+    // é…ç½®
     const TABS_CONTAINER_SELECTOR = 'ul.tabs';
     const TAB_ITEM_SELECTOR = 'li';
     const TAB_LINK_SELECTOR = 'a[href="javascript:void(0)"]';
-    // ´æ´¢ÒÑ¼àÌıµÄtabs£¬±ÜÃâÖØ¸´¼àÌı
+    // å­˜å‚¨å·²ç›‘å¬çš„tabsï¼Œé¿å…é‡å¤ç›‘å¬
     const observedTabs = new Set();
     var currentPage = "";
     var selectList = [];
     var originalTableElement = null;
     function initTabsListener() {
-        // ²éÕÒËùÓĞµÄtabsÈİÆ÷
+        // æŸ¥æ‰¾æ‰€æœ‰çš„tabså®¹å™¨
         const tabsContainers = document.querySelectorAll(TABS_CONTAINER_SELECTOR);
         tabsContainers.forEach(container => {
             if (!observedTabs.has(container)) {
                 setupContainerObserver(container);
                 observedTabs.add(container);
-                // ³õÊ¼»¯ÒÑ´æÔÚµÄtabÏî
+                // åˆå§‹åŒ–å·²å­˜åœ¨çš„tabé¡¹
                 initExistingTabs(container);
             }
         });
     }
     function setupContainerObserver(container) {
-        // ´´½¨MutationObserver¼àÌıÈİÆ÷±ä»¯
+        // åˆ›å»ºMutationObserverç›‘å¬å®¹å™¨å˜åŒ–
         const observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
                 if (mutation.type === 'childList') {
-                    // ¼ì²éĞÂÔöµÄ½Úµã
+                    // æ£€æŸ¥æ–°å¢çš„èŠ‚ç‚¹
                     mutation.addedNodes.forEach(function (node) {
                         if (node.nodeType === 1 && node.matches(TAB_ITEM_SELECTOR)) {
-                            // ĞÂÌí¼ÓµÄliÔªËØ
+                            // æ–°æ·»åŠ çš„liå…ƒç´ 
                             setTimeout(() => setupTabClickListener(node), 0);
                         }
                     });
                 }
             });
         });
-        // ¿ªÊ¼¹Û²ì
+        // å¼€å§‹è§‚å¯Ÿ
         observer.observe(container, {
             childList: true,
-            subtree: false // Ö»¼àÌıÖ±½Ó×ÓÔªËØ±ä»¯
+            subtree: false // åªç›‘å¬ç›´æ¥å­å…ƒç´ å˜åŒ–
         });
     }
     function initExistingTabs(container) {
-        // ÎªÈİÆ÷ÖĞÒÑ´æÔÚµÄtabÏîÌí¼Ó¼àÌı
+        // ä¸ºå®¹å™¨ä¸­å·²å­˜åœ¨çš„tabé¡¹æ·»åŠ ç›‘å¬
         const existingTabs = container.querySelectorAll(TAB_ITEM_SELECTOR);
         existingTabs.forEach(tab => {
             setupTabClickListener(tab);
         });
     }
     function setupTabClickListener(tabElement) {
-        // ²éÕÒtabÖĞµÄÁ´½Ó
+        // æŸ¥æ‰¾tabä¸­çš„é“¾æ¥
         const link = tabElement.querySelector(TAB_LINK_SELECTOR);
         if (link && !link.hasAttribute('data-tab-listener')) {
             link.addEventListener('click', function (e) {
@@ -71,48 +71,44 @@
             });
             link.setAttribute('data-tab-listener', 'true');
             const title = getTabTitle(tabElement);
-            console.log('ÒÑ¼àÌıtab:', title);
+            console.log('å·²ç›‘å¬tab:', title);
             currentPage = title;
-            if (title == "¸öÈËÑ¡¿Î") {
+            if (title == "ä¸ªäººé€‰è¯¾") {
                 handleCourseSelectionTab();
             }
         }
     }
     function handleTabClick(event, tabElement) {
         const tabTitle = getTabTitle(tabElement);
-        // ÔÚÕâÀïÌí¼ÓÄãµÄ×Ô¶¨ÒåÂß¼­
+        // åœ¨è¿™é‡Œæ·»åŠ ä½ çš„è‡ªå®šä¹‰é€»è¾‘
         processTabClick(tabElement, tabTitle);
     }
     function getTabTitle(tabElement) {
         const titleSpan = tabElement.querySelector('.tabs-title');
-        return titleSpan ? titleSpan.textContent : 'Î´Öª±êÇ©';
+        return titleSpan ? titleSpan.textContent : 'æœªçŸ¥æ ‡ç­¾';
     }
     function processTabClick(tabElement, title) {
-        // ÄãµÄ×Ô¶¨Òå´¦ÀíÂß¼­
+        // ä½ çš„è‡ªå®šä¹‰å¤„ç†é€»è¾‘
         currentPage = title;
         switch (title) {
-            case '¸öÈËÑ¡¿Î':
+            case 'ä¸ªäººé€‰è¯¾':
                 handleCourseSelectionTab();
                 break;
         }
     }
-    // ×Ô¶¨Òå´¦Àíº¯Êı
+    // è‡ªå®šä¹‰å¤„ç†å‡½æ•°
     async function handleCourseSelectionTab() {
-        console.log('´¦Àí"¸öÈËÑ¡¿Î"±êÇ©');
-        //if (!await detectCourseSelectionStatue()) {
-        //    console.log("ÒÑÖÕÖ¹")
-        //    //return;
-        //}
-
+        console.log('å¤„ç†"ä¸ªäººé€‰è¯¾"æ ‡ç­¾');
         if (document.getElementById('tm-datagrid-extractor-window')) {
-            console.log("´°¿ÚÒÑ´´½¨");
-            document.getElementById('tm-datagrid-extractor-window').style.display = '';
-            return document.getElementById('tm-datagrid-extractor-window');
+            console.log("çª—å£å·²åˆ›å»º");
+            // çª—å£å·²åˆ›å»ºï¼Œä¸éœ€è¦é‡å¤åˆ›å»ºã€‚å…³é—­çª—å£åªæ˜¯å°†çª—å£éšè— document.getElementById('tm-datagrid-extractor-window').style.display = '';
+            return document.getElementById('tm-datagrid-extractor-window'); // åœæ­¢åˆ›å»ºçª—å£ï¼Œç›´æ¥è¿”å›
         }
 
         var floatingWindow = document.createElement('div');
         floatingWindow.id = 'tm-datagrid-extractor-window';
-
+        
+        // åˆ›å»ºçª—å£æœ¬ä½“
         floatingWindow.style.cssText = `
             position: fixed;
             top: 10px;
@@ -125,7 +121,8 @@
             z-index: 10000;
             overflow: auto;
         `;
-        // ´´½¨´°¿Ú±êÌâÀ¸
+
+        // åˆ›å»ºçª—å£æ ‡é¢˜æ 
         const windowHeader = document.createElement('div');
         windowHeader.style.cssText = `
             background: #4b6cb7;
@@ -137,12 +134,14 @@
             align-items: center;
         `;
 
+        // åˆ›å»ºçª—å£å¤´
         const windowTitle = document.createElement('div');
-        windowTitle.textContent = '¹ã¹¤ÇÀ¿ÎÖúÊÖ';
+        windowTitle.textContent = 'å¹¿å·¥æŠ¢è¯¾åŠ©æ‰‹';
         windowTitle.style.fontWeight = 'bold';
 
+        // åˆ›å»ºå…³é—­æŒ‰é’®
         const closeBtn = document.createElement('button');
-        closeBtn.textContent = '¡Á';
+        closeBtn.textContent = 'Ã—';
         closeBtn.style.cssText = `
             background: none;
             border: none;
@@ -160,7 +159,7 @@
         windowHeader.appendChild(windowTitle);
         windowHeader.appendChild(closeBtn);
 
-        // ´´½¨´°¿ÚÄÚÈİÇøÓò
+        // åˆ›å»ºçª—å£å†…å®¹åŒºåŸŸ
         const windowBody = document.createElement('div');
         windowBody.style.cssText = `
             padding: 15px;
@@ -169,6 +168,7 @@
             justify-content: start;
         `;
 
+        // åˆ›å»ºè¡¨æ ¼å…ƒç´ 
         const tableElement = document.createElement('div');
         tableElement.style.cssText = `
             overflow - y: auto;
@@ -178,15 +178,16 @@
             justify - content: start;
         `;
 
+        // æŒ‡ç¤ºæ–‡æœ¬
         var inputPrompt = document.createElement('td');
-        inputPrompt.textContent = "µÈ´ı±í¸ñÊäÈë";
+        inputPrompt.textContent = "ç­‰å¾…è¡¨æ ¼è¾“å…¥";
         inputPrompt.style.cssText = `
             padding: 10px 0px;
         `;
         
-        // ´´½¨ÌáÈ¡±í¸ñ°´Å¥
+        // åˆ›å»ºæå–è¡¨æ ¼æŒ‰é’®
         const extractButton = document.createElement('button');
-        extractButton.textContent = 'ÌáÈ¡±í¸ñ';
+        extractButton.textContent = 'æå–è¡¨æ ¼';
         extractButton.style.cssText = `
             z-index: 9999;
             padding: 10px 15px;
@@ -197,52 +198,53 @@
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         `;
-        // ÌáÈ¡±í¸ñº¯Êı
+
+        // æå–è¡¨æ ¼å‡½æ•°
         extractButton.addEventListener('click', () => {
             try {
                 selectList = [];
                 const iframes = document.getElementsByTagName('iframe');
                 for (var i = 0; i < iframes.length; i++) {
-                    console.log("ÕÒµ½µÄµÚ", i, "¸öiframes: ", iframes[i].contentDocument);
+                    console.log("æ‰¾åˆ°çš„ç¬¬", i, "ä¸ªiframes: ", iframes[i].contentDocument);
                 }
                 const iframeDocument = iframes[0].contentDocument;
                 if (iframeDocument === null) {
-                    throw new DOMException("Ã»ÓĞ»ñÈ¡µ½iframeDocumentÔªËØ¡£")
+                    throw new DOMException("æ²¡æœ‰è·å–åˆ°iframeDocumentå…ƒç´ ã€‚")
                 }
-                console.log("×¼±¸³¢ÊÔÌáÈ¡±í¸ñ¡£µ±Ç°Ò³Ãæ£º", currentPage);
-                if (currentPage !== "¸öÈËÑ¡¿Î") {
-                    console.log("µ±Ç°²»ÔÚÑ¡¿Î½çÃæ!");
-                    inputPrompt.textContent = "ÒÑÈ¡Ïû£ºµ±Ç°²»ÔÚÑ¡¿Î½çÃæ";
+                console.log("å‡†å¤‡å°è¯•æå–è¡¨æ ¼ã€‚å½“å‰é¡µé¢ï¼š", currentPage);
+                if (currentPage !== "ä¸ªäººé€‰è¯¾") {
+                    console.log("å½“å‰ä¸åœ¨é€‰è¯¾ç•Œé¢!");
+                    inputPrompt.textContent = "å·²å–æ¶ˆï¼šå½“å‰ä¸åœ¨é€‰è¯¾ç•Œé¢";
                     return;
                 }
                 waitForElement(iframeDocument, ".datagrid-btable")
                     .then(element => {
-                        console.log('ÕÒµ½ÔªËØ:', element);
-                        // ÔÚÕâÀï´¦ÀíÔªËØ
+                        console.log('æ‰¾åˆ°å…ƒç´ :', element);
+                        // åœ¨è¿™é‡Œå¤„ç†å…ƒç´ 
                         originalTableElement = element;
                         if (originalTableElement === null) {
-                            console.log('Î´ÕÒµ½±í¸ñ£¡');
+                            console.log('æœªæ‰¾åˆ°è¡¨æ ¼ï¼');
                             return;
                         }
-                        console.log("ÒÑÕÒµ½±í¸ñ£º", originalTableElement);
-                        inputPrompt.textContent = "ÒÑÕÒµ½±í¸ñ";
+                        console.log("å·²æ‰¾åˆ°è¡¨æ ¼ï¼š", originalTableElement);
+                        inputPrompt.textContent = "å·²æ‰¾åˆ°è¡¨æ ¼";
 
-                        const count = originalTableElement.children[0].childElementCount; // Ô­±í¸ñµÄĞĞÊı
+                        const count = originalTableElement.children[0].childElementCount; // åŸè¡¨æ ¼çš„è¡Œæ•°
 
-                        // ±í¸ñÄÚÈİÎª¿ÕÊ±£¬Ìí¼ÓÑùÀı£¬´ËÄ£¿é¿ÉÉ¾³ı
-                        if (count === 0) {
-                            inputPrompt.textContent += "  ÌáÊ¾£º±í¸ñµÄÄÚÈİËÆºõÎª¿Õ£¬»òĞèÒª¹Ø±ÕÆäËûÒ³Ãæ ´´½¨ÁËÊ¾Àı±í¸ñ";
+                        // è¡¨æ ¼å†…å®¹ä¸ºç©ºæ—¶ï¼Œæ·»åŠ æ ·ä¾‹ï¼Œæ­¤æ¨¡å—å¯åˆ é™¤
+                        if (count == 0) {
+                            inputPrompt.textContent += "  æç¤ºï¼šè¡¨æ ¼çš„å†…å®¹ä¼¼ä¹ä¸ºç©ºï¼Œæˆ–éœ€è¦å…³é—­å…¶ä»–é¡µé¢ åˆ›å»ºäº†ç¤ºä¾‹è¡¨æ ¼";
                             const exampleTableRow = document.createElement('tr');
                             exampleTableRow.style.padding = "0px 10px";
 
                             exampleTableRow.appendChild(createCustomTDString("osu!course: How to play jump map"));
                             exampleTableRow.appendChild(createCustomTDString("40"));
                             exampleTableRow.appendChild(createCustomTDString("mrekk"));
-                            exampleTableRow.appendChild(createCustomTDString("ÏŞÑ¡ĞÅÏ¢"));
-                            exampleTableRow.appendChild(createCustomTDString("ÒÑÑ¡ĞÅÏ¢"));
+                            exampleTableRow.appendChild(createCustomTDString("é™é€‰ä¿¡æ¯"));
+                            exampleTableRow.appendChild(createCustomTDString("å·²é€‰ä¿¡æ¯"));
                             exampleTableRow.appendChild(createCustomTDString("osu!"));
                             exampleTableRow.appendChild(createCustomTDString("osu!course"));
-                            exampleTableRow.appendChild(createCustomTDString("Ä£ÄâÑ¡¿Î°´Å¥"));
+                            exampleTableRow.appendChild(createCustomTDString("æ¨¡æ‹Ÿé€‰è¯¾æŒ‰é’®"));
 
                             const HasSelected = document.createElement('td');
                             HasSelected.textContent = "";
@@ -256,52 +258,51 @@
                             originalTableElement = exampleTableElement;
                         }
                         
-                        let clonedTable = originalTableElement.cloneNode(true); // ¿ËÂ¡±í¸ñÒÔ±ÜÃâÓ°ÏìÔ­±í¸ñ£¬Ê¹ÓÃÉî¶È¿ËÂ¡ÒÔ»ñÈ¡ËùÓĞ×ÓÔªËØ
-                        let targetTable = document.createElement('table'); // ´´½¨±í¸ñÔªËØ
+                        let clonedTable = originalTableElement.cloneNode(true); // å…‹éš†è¡¨æ ¼ä»¥é¿å…å½±å“åŸè¡¨æ ¼ï¼Œä½¿ç”¨æ·±åº¦å…‹éš†ä»¥è·å–æ‰€æœ‰å­å…ƒç´ 
+                        let targetTable = document.createElement('table'); // åˆ›å»ºè¡¨æ ¼å…ƒç´ 
 
-                        // Ìí¼Ó±íÍ·£¬±íÍ·Êµ¼ÊÎª±í¸ñµÄÒ»ĞĞ
-                        // Ä³Ğ©×é¼şÊ¹ÓÃº¯Êı´´½¨td²¢Ê¹ÓÃdiv°ü¹ü£¬ÆäËû×é¼şÊ¹ÓÃÔ­±í¸ñµÄtd
+                        // æ·»åŠ è¡¨å¤´ï¼Œè¡¨å¤´å®é™…ä¸ºè¡¨æ ¼çš„ä¸€è¡Œ
+                        // æŸäº›ç»„ä»¶ä½¿ç”¨å‡½æ•°åˆ›å»ºtdå¹¶ä½¿ç”¨divåŒ…è£¹ï¼Œå…¶ä»–ç»„ä»¶ä½¿ç”¨åŸè¡¨æ ¼çš„td
                         const tableRowHeader = document.createElement('tr');
-                        tableRowHeader.appendChild(createCustomTDString("Ë÷Òı"));
-                        tableRowHeader.appendChild(createCustomTDString("Ñ¡Ôñ"));
-                        tableRowHeader.appendChild(createCustomTDString("Ñ¡¿ÎÅÅĞò"));
-                        tableRowHeader.appendChild(createCustomTDString("¿Î³ÌÃû³Æ"));
-                        tableRowHeader.appendChild(createCustomTDString("Ñ§·Ö"));
-                        tableRowHeader.appendChild(createCustomTDString("½ÌÊ¦"));
-                        tableRowHeader.appendChild(createCustomTDString("±¸×¢"));
+                        tableRowHeader.appendChild(createCustomTDString("ç´¢å¼•"));
+                        tableRowHeader.appendChild(createCustomTDString("é€‰æ‹©"));
+                        tableRowHeader.appendChild(createCustomTDString("é€‰è¯¾æ’åº"));
+                        tableRowHeader.appendChild(createCustomTDString("è¯¾ç¨‹åç§°"));
+                        tableRowHeader.appendChild(createCustomTDString("å­¦åˆ†"));
+                        tableRowHeader.appendChild(createCustomTDString("æ•™å¸ˆ"));
+                        tableRowHeader.appendChild(createCustomTDString("å¤‡æ³¨"));
 
-                        targetTable.appendChild(tableRowHeader); // ½«±íÍ·Ìí¼Óµ½±í¸ñ
+                        targetTable.appendChild(tableRowHeader); // å°†è¡¨å¤´æ·»åŠ åˆ°è¡¨æ ¼
 
-                        // Ñ­»·Ìí¼Ó±íÄÚÈİ
+                        // å¾ªç¯æ·»åŠ è¡¨å†…å®¹
                         for (let i = 0; i < count; i++) {
-                            // clonedTableÊÇtable£¬ÆäfirstElementChildÊÇtable-body£¬children[i]ÊÇµÚiĞĞ
+                            // clonedTableæ˜¯tableï¼Œå…¶firstElementChildæ˜¯table-bodyï¼Œchildren[i]æ˜¯ç¬¬iè¡Œ
                             const tableTableRow = clonedTable.firstElementChild.children[i]; 
                             //console.log("tableTableRow: ", tableTableRow);
 
-                            // ¸÷ÖÖĞÅÏ¢ÔÚ±í¸ñÖĞ¾ßÓĞ¹Ì¶¨×ÓÔªËØÎ»ÖÃ£¬¶ÔÓ¦¹ØÏµÈçÏÂ£º
-                            // 3: ¿Î³ÌÃû³ÆÔÚ 4: Ñ§·Ö 5: ½ÌÊ¦ 6: ÏŞÑ¡ÈËÊı 7: ÒÑÑ¡ÈËÊı 8: ¿Î³Ì´óÀà 9: ¿Î³Ì·ÖÀà 10: Ñ¡¿Î²Ù×÷¡£0£¬1£¬2ÊÇ¿ÕµÄ£¬ÔİÊ±²»ÖªÎªºÎ¡£
-                            // ĞèÒª»ñÈ¡ÏŞÑ¡ÈËÊıºÍÒÑÑ¡ÈËÊıÀ´ÅĞ¶Ï¿Î³ÌÊÇ·ñÒÑÑ¡Âú£¬ËùÒÔ»ñÈ¡µÄÊÇtdÄÚdivÔªËØµÄtextContent
+                            // å„ç§ä¿¡æ¯åœ¨è¡¨æ ¼ä¸­å…·æœ‰å›ºå®šå­å…ƒç´ ä½ç½®ï¼Œå¯¹åº”å…³ç³»å¦‚ä¸‹ï¼š
+                            // 3: è¯¾ç¨‹åç§°åœ¨ 4: å­¦åˆ† 5: æ•™å¸ˆ 6: é™é€‰äººæ•° 7: å·²é€‰äººæ•° 8: è¯¾ç¨‹å¤§ç±» 9: è¯¾ç¨‹åˆ†ç±» 10: é€‰è¯¾æ“ä½œã€‚0ï¼Œ1ï¼Œ2æ˜¯ç©ºçš„ï¼Œæš‚æ—¶ä¸çŸ¥ä¸ºä½•ã€‚
+                            // éœ€è¦è·å–é™é€‰äººæ•°å’Œå·²é€‰äººæ•°æ¥åˆ¤æ–­è¯¾ç¨‹æ˜¯å¦å·²é€‰æ»¡ã€‚è·å–çš„æ˜¯tdå†…divå…ƒç´ çš„textContent
                             const courseName = tableTableRow.children[3];
                             const score = tableTableRow.children[4];
                             const teacher = tableTableRow.children[5];
                             const selectLimitCount = tableTableRow.children[6].firstElementChild.textContent; 
                             const hasSelectedCount = tableTableRow.children[7].firstElementChild.textContent;
-
-                            let prompt = "-"; // ½«Ìî³äÖÁµ±Ç°ĞĞµÄ¡®±¸×¢¡¯Ò»ÁĞ
+                            let prompt = "-"; // å¯¹åº”å½“å‰è¡Œçš„â€˜å¤‡æ³¨â€™ä¸€åˆ—
                             if (selectLimitCount == hasSelectedCount) {
-                                prompt = "ÓÉÓÚÑ¡¿ÎÈËÊıÓëÏŞÑ¡ÈËÊıÏàµÈ£¬¸Ã¿Î³Ì¿ÉÄÜÓÀÔ¶ÄÑÒÔÑ¡Ôñ";
-                                console.log("ÓÉÓÚÑ¡¿ÎÈËÊıÓëÏŞÑ¡ÈËÊıÏàµÈ£¬¿ÉÄÜÓÀÔ¶ÎŞ·¨Ñ¡Ôñ¿Î³Ì¡£µ±Ç°Ñ¡¿ÎĞòºÅ£º", i)
+                                prompt = "ç”±äºé€‰è¯¾äººæ•°ä¸é™é€‰äººæ•°ç›¸ç­‰ï¼Œè¯¥è¯¾ç¨‹å¯èƒ½æ— æ³•é€‰æ‹©";
+                                console.log("ç”±äºé€‰è¯¾äººæ•°ä¸é™é€‰äººæ•°ç›¸ç­‰ï¼Œå¯èƒ½æ°¸è¿œæ— æ³•é€‰æ‹©è¯¾ç¨‹ã€‚å½“å‰é€‰è¯¾åºå·ï¼š", i)
                             }
 
-                            // Ìí¼ÓÑ¡¿ÎÅÅĞòÊäÈë¿Ø¼ş
+                            // æ·»åŠ é€‰è¯¾æ’åºè¾“å…¥æ§ä»¶
                             const orderIndexControl = document.createElement('input');
-                            orderIndexControl.disabled = true; // Ñ¡ÖĞ¸Ã¿Î³ÌÊ±²Å»áÆôÓÃ
+                            orderIndexControl.disabled = true; // é€‰ä¸­è¯¥è¯¾ç¨‹æ—¶æ‰ä¼šå¯ç”¨
                             orderIndexControl.addEventListener('input', function () {
                                 let target = orderIndexControl.value; 
-                                if (target < selectList.length) { // ÉñÖ®javascript²»ĞèÒªÎÒ×ª»»ÀàĞÍ
+                                if (target < selectList.length) { // ç¥ä¹‹javascriptä¸éœ€è¦æˆ‘è½¬æ¢ç±»å‹
                                     //orderIndexControl.style.borderColor = "#EB1F61";
                                     let original = selectList.indexOf(i);
-                                    console.log("½»»»ÁĞ±í ", target, " ºÍ ", original, " µÄÎ»ÖÃ");
+                                    console.log("äº¤æ¢åˆ—è¡¨ ", target, " å’Œ ", original, " çš„ä½ç½®");
                                     [selectList[target], selectList[original]] = [selectList[original], selectList[target]];
                                 }
                                 else {
@@ -309,7 +310,7 @@
                                 }
                             });
 
-                            // Ìí¼ÓÊÇ·ñÑ¡Ôñ¿Î³Ì¿Ø¼ş
+                            // æ·»åŠ æ˜¯å¦é€‰æ‹©è¯¾ç¨‹æ§ä»¶
                             const checkBoxControl = document.createElement('input');
                             checkBoxControl.type = "checkbox";
                             checkBoxControl.addEventListener('change', function () {
@@ -317,15 +318,15 @@
                                     addTableRow.style.backgroundColor = '#FFFED9'
                                     let index = selectList.indexOf(i);
                                     if (index == -1) {
-                                        console.log("Ìí¼ÓĞòºÅ ", i, " µ½Ñ¡ÔñÁĞ±íÄ©Î²");
+                                        console.log("æ·»åŠ åºå· ", i, " åˆ°é€‰æ‹©åˆ—è¡¨æœ«å°¾");
                                         selectList.push(i);
                                     }
                                     if (orderIndexControl.value != "") {
-                                        //console.log("ĞòºÅ¿ØÖÆµÄÄÚÈİÎª¿Õ£¡¶ÁÈ¡µ½£º", orderIndexControl.value);
+                                        //console.log("åºå·æ§åˆ¶çš„å†…å®¹ä¸ä¸ºç©ºï¼è¯»å–åˆ°ï¼š", orderIndexControl.value);
                                         let target = parseInt(orderIndexControl.value);
                                         let original = i;
                                         if (target < selectList.length) {
-                                            //console.log("½»»»ÁĞ±í ", target, " ºÍ ", original, " µÄÎ»ÖÃ");
+                                            //console.log("äº¤æ¢åˆ—è¡¨ ", target, " å’Œ ", original, " çš„ä½ç½®");
                                             //let temp = selectList[target];
                                             //selectList[target] = selectList[original];
                                             //selectList[original] = temp;
@@ -346,13 +347,13 @@
                                     }
                                     orderIndexControl.disabled = true;
                                 }
-                                console.log("µ±Ç°Ñ¡ÔñÁĞ±í£º", selectList);
+                                console.log("å½“å‰é€‰æ‹©åˆ—è¡¨ï¼š", selectList);
                             });
 
-                            const addTableRow = document.createElement('tr'); // ĞÂ½¨Ò»ĞĞ
+                            const addTableRow = document.createElement('tr'); // æ–°å»ºä¸€è¡Œ
 
-                            // ½«¸÷×é¼şÌí¼Óµ½ĞÂ½¨µÄÒ»ĞĞ
-                            // Ä³Ğ©×é¼şÊ¹ÓÃº¯Êı´´½¨td²¢Ê¹ÓÃdiv°ü¹ü£¬ÆäËû×é¼şÊ¹ÓÃÔ­±í¸ñµÄtd
+                            // å°†å„ç»„ä»¶æ·»åŠ åˆ°æ–°å»ºçš„ä¸€è¡Œ
+                            // æŸäº›ç»„ä»¶ä½¿ç”¨å‡½æ•°åˆ›å»ºtdå¹¶ä½¿ç”¨divåŒ…è£¹ï¼Œå…¶ä»–ç»„ä»¶ä½¿ç”¨åŸè¡¨æ ¼çš„td
                             addTableRow.appendChild(createCustomTDString(i + 1)); 
                             addTableRow.appendChild(createCustomTDElement(checkBoxControl));
                             addTableRow.appendChild(createCustomTDElement(orderIndexControl));
@@ -361,16 +362,16 @@
                             addTableRow.appendChild(teacher);
                             addTableRow.appendChild(createCustomTDString(prompt, "12px"));
 
-                            if (i % 2 == 0) addTableRow.style.backgroundColor = '#F5F5F5'; // ĞĞÊıÎªÅ¼ÊıÊ±ÉÏÉ«£¬Ê¹±í¸ñÒ×¶Á
+                            if (i % 2 == 0) addTableRow.style.backgroundColor = '#F5F5F5'; // è¡Œæ•°ä¸ºå¶æ•°æ—¶ä¸Šè‰²ï¼Œä½¿è¡¨æ ¼æ˜“è¯»
 
-                            targetTable.appendChild(addTableRow); // ½«ĞÂ½¨µÄÒ»ĞĞÌí¼Óµ½±í¸ñ
+                            targetTable.appendChild(addTableRow); // å°†æ–°å»ºçš„ä¸€è¡Œæ·»åŠ åˆ°è¡¨æ ¼
                         }
-                        // Îª±í¸ñÌí¼ÓÒ»Ğ©»ù±¾ÑùÊ½
+                        // ä¸ºè¡¨æ ¼æ·»åŠ ä¸€äº›åŸºæœ¬æ ·å¼
                         targetTable.style.width = '100%';
                         targetTable.style.borderCollapse = 'collapse';
                         targetTable.style.margin = '0';
 
-                        // Îª±í¸ñµ¥Ôª¸ñÌí¼ÓÑùÊ½
+                        // ä¸ºè¡¨æ ¼å•å…ƒæ ¼æ·»åŠ æ ·å¼
                         const cells = targetTable.getElementsByTagName('td');
                         const headers = targetTable.getElementsByTagName('th');
                         for (var cell of cells) {
@@ -383,7 +384,7 @@
                         windowBody.appendChild(tableElement);
                     })
                     .catch(error => {
-                        console.error('µÈ´ıÔªËØ³¬Ê±:', error);
+                        console.error('ç­‰å¾…å…ƒç´ è¶…æ—¶:', error);
                     });
                 
             }
@@ -404,7 +405,7 @@
         `;
 
         const startSelectButton = document.createElement('button');
-        startSelectButton.textContent = '¿ªÊ¼ÇÀ¿Î';
+        startSelectButton.textContent = 'å¼€å§‹æŠ¢è¯¾';
         startSelectButton.style.cssText = `
             z-index: 9999;
             padding: 10px 15px;
@@ -418,24 +419,24 @@
 
         var doSelectingCourse = false;
         startSelectButton.addEventListener('click', async () => {
-            console.log("###  ×¼±¸³¢ÊÔÇÀ¿Î¡£µ±Ç°Ò³Ãæ£º", currentPage);
-            if (currentPage !== "¸öÈËÑ¡¿Î") {
-                console.log("µ±Ç°²»ÔÚÑ¡¿Î½çÃæ£¡");
-                excutePrompt.textContent = "ÒÑÈ¡Ïû£ºµ±Ç°²»ÔÚÑ¡¿Î½çÃæ";
+            console.log("###  å‡†å¤‡å°è¯•æŠ¢è¯¾ã€‚å½“å‰é¡µé¢ï¼š", currentPage);
+            if (currentPage !== "ä¸ªäººé€‰è¯¾") {
+                console.log("å½“å‰ä¸åœ¨é€‰è¯¾ç•Œé¢ï¼");
+                excutePrompt.textContent = "å·²å–æ¶ˆï¼šå½“å‰ä¸åœ¨é€‰è¯¾ç•Œé¢";
                 return;
             }
             if (originalTableElement === null) {
-                excutePrompt.textContent = "ÒÑÈ¡Ïû£º»¹Î´»ñÈ¡µ½Ô­Ê¼±í¸ñ";
+                excutePrompt.textContent = "å·²å–æ¶ˆï¼šè¿˜æœªè·å–åˆ°åŸå§‹è¡¨æ ¼";
                 return;
             }
             if (selectList.length == 0) {
-                excutePrompt.textContent = "ÒÑÈ¡Ïû£ºµ±Ç°»¹Ã»ÓĞ¹´Ñ¡ÒªÑ¡ÔñµÄ¿Î³Ì";
+                excutePrompt.textContent = "å·²å–æ¶ˆï¼šå½“å‰è¿˜æ²¡æœ‰å‹¾é€‰è¦é€‰æ‹©çš„è¯¾ç¨‹";
                 return;
             }
             if (doSelectingCourse) {
-                startSelectButton.textContent = '¿ªÊ¼ÇÀ¿Î';
+                startSelectButton.textContent = 'å¼€å§‹æŠ¢è¯¾';
                 stopSelecting();
-                // Çå³ıËùÓĞ¼àÌıÆ÷ºÍ¶¨Ê±Æ÷
+                // æ¸…é™¤æ‰€æœ‰ç›‘å¬å™¨å’Œå®šæ—¶å™¨
                 if (window.iframeObserver) {
                     window.iframeObserver.disconnect();
                 }
@@ -446,32 +447,32 @@
             }
             else {
                 doSelectingCourse = true;
-                excutePrompt.textContent = "¼´½«¿ªÊ¼ÇÀ¿Î";
-                startSelectButton.textContent = 'Í£Ö¹ÇÀ¿Î';
+                excutePrompt.textContent = "å³å°†å¼€å§‹æŠ¢è¯¾";
+                startSelectButton.textContent = 'åœæ­¢æŠ¢è¯¾';
             }
             const iframe = document.getElementsByTagName('iframe')[0];
 
-            // ¼àÌıiframe±¾ÉíµÄ¼ÓÔØÍê³ÉÊÂ¼ş
+            // ç›‘å¬iframeæœ¬èº«çš„åŠ è½½å®Œæˆäº‹ä»¶
             iframe.addEventListener('load', onIframeLoaded);
             const iframeDocument = iframe.contentDocument;
 
-            // ¿ªÊ¼¼ì²âÁ÷³Ì
+            // å¼€å§‹æ£€æµ‹æµç¨‹ï¼Œæ£€æµ‹iframeï¼Œé€‰è¯¾æŒ‰é’®ï¼Œåˆ·æ–°æŒ‰é’®
             startDetection();
 
             async function startDetection() {
                 if (!doSelectingCourse) return;
 
-                // Ã¿´Î¼ì²â¶¼ÖØĞÂ»ñÈ¡iframeDocument
+                // æ¯æ¬¡æ£€æµ‹éƒ½é‡æ–°è·å–iframeDocumentï¼Œå› ä¸ºåˆ·æ–°åçš„iframeæ˜¯æ–°çš„
                 let iframeDocument;
                 try {
                     iframeDocument = iframe.contentDocument;
                 } catch (e) {
-                    console.error("ÎŞ·¨·ÃÎÊiframeÄÚÈİ:", e);
+                    console.error("æ— æ³•è®¿é—®iframeå†…å®¹:", e);
                     setTimeout(startDetection, 1000);
                     return;
                 }
                 if (!iframeDocument) {
-                    console.log("iframeÎÄµµÎ´¼ÓÔØÍê³É£¬µÈ´ıºóÖØÊÔ");
+                    console.log("iframeæ–‡æ¡£æœªåŠ è½½å®Œæˆï¼Œç­‰å¾…åé‡è¯•");
                     setTimeout(startDetection, 500);
                     return;
                 }
@@ -485,14 +486,14 @@
                     const selectButton = selectRow.children[10].children[0].children[1];
                     if (selectButton) {
                         console.log("selectButton: ", selectButton);
-                        console.log("ÕÒµ½Ñ¡¿Î°´Å¥£¬Ö´ĞĞÑ¡¿Î");
+                        console.log("æ‰¾åˆ°é€‰è¯¾æŒ‰é’®ï¼Œæ‰§è¡Œé€‰è¯¾");
                         selectButton.click();
-                        excutePrompt.textContent = ("ÕÒµ½Ñ¡¿Î°´Å¥£¬Ö´ĞĞÑ¡¿Î£¬µã»÷Ñ¡¿Î°´Å¥");
+                        excutePrompt.textContent = ("æ‰¾åˆ°é€‰è¯¾æŒ‰é’®ï¼Œæ‰§è¡Œé€‰è¯¾ï¼Œç‚¹å‡»é€‰è¯¾æŒ‰é’®");
                         waitForElement(iframeDocument, ".messager-button").then(element => {
-                            console.log("ÕÒµ½È·¶¨°´Å¥£º", element);
+                            console.log("æ‰¾åˆ°ç¡®å®šæŒ‰é’®ï¼š", element);
                             element.firstElementChild.click();
                         }).catch(error => {
-                            console.log("µÈ´ıÔªËØ³¬Ê±£º", error);
+                            console.log("ç­‰å¾…å…ƒç´ è¶…æ—¶ï¼š", error);
 
                         });
                         
@@ -500,37 +501,37 @@
                         return;
                     }
                     else {
-                        console.log("ĞòºÅÎª ", selectList[0], " µÄÑ¡¿Î°´Å¥Î´ÕÒµ½£¬¼´½«ÖØÊÔ");
-                        excutePrompt.textContent = ("ĞòºÅÎª " + selectList[0] + " µÄÑ¡¿Î°´Å¥Î´ÕÒµ½£¬¼´½«ÖØÊÔ");
+                        console.log("åºå·ä¸º ", selectList[0], " çš„é€‰è¯¾æŒ‰é’®æœªæ‰¾åˆ°ï¼Œå³å°†é‡è¯•");
+                        excutePrompt.textContent = ("åºå·ä¸º " + selectList[0] + " çš„é€‰è¯¾æŒ‰é’®æœªæ‰¾åˆ°ï¼Œå³å°†é‡è¯•");
                     }
                 }
                 else {
-                    console.log("selectRow²»´æÔÚ")
+                    console.log("selectRowä¸å­˜åœ¨")
                 }
-                console.log("ÏÖÔÚ²»ÊÇÑ¡¿ÎÊ±¼ä»òÑ¡¿ÎÊ§°Ü£¬¼´½«¼ÌĞø");
-                excutePrompt.textContent = ("ÏÖÔÚ²»ÊÇÑ¡¿ÎÊ±¼ä»òÑ¡¿ÎÊ§°Ü£¬¼´½«¼ÌĞø");
+                console.log("ç°åœ¨ä¸æ˜¯é€‰è¯¾æ—¶é—´æˆ–é€‰è¯¾å¤±è´¥ï¼Œå³å°†ç»§ç»­");
+                excutePrompt.textContent = ("ç°åœ¨ä¸æ˜¯é€‰è¯¾æ—¶é—´æˆ–é€‰è¯¾å¤±è´¥ï¼Œå³å°†ç»§ç»­");
                 
-                // 2. ¼ì²é²¢µã»÷Ë¢ĞÂ°´Å¥
+                // 2. æ£€æŸ¥å¹¶ç‚¹å‡»åˆ·æ–°æŒ‰é’®
                 const refreshButton = iframeDocument.querySelector('.easyui-linkbutton.l-btn');
                 if (refreshButton) {
-                    console.log("µã»÷Ë¢ĞÂ°´Å¥");
+                    console.log("ç‚¹å‡»åˆ·æ–°æŒ‰é’®");
                     refreshButton.click();
 
-                    // Ë¢ĞÂºóiframe»áÖØĞÂ¼ÓÔØ£¬µÈ´ıonIframeLoadedÊÂ¼ş
+                    // åˆ·æ–°åiframeä¼šé‡æ–°åŠ è½½ï¼Œç­‰å¾…onIframeLoadedäº‹ä»¶
                 } else {
-                    // Èç¹ûË¢ĞÂ°´Å¥²»´æÔÚ£¬µÈ´ıºóÖØÊÔ
-                    console.log("Ë¢ĞÂ°´Å¥Î´ÕÒµ½£¬µÈ´ıºóÖØÊÔ");
-                    excutePrompt.textContent = "Ë¢ĞÂ°´Å¥Î´ÕÒµ½£¬µÈ´ıºóÖØÊÔ";
+                    // å¦‚æœåˆ·æ–°æŒ‰é’®ä¸å­˜åœ¨ï¼Œç­‰å¾…åé‡è¯•
+                    console.log("åˆ·æ–°æŒ‰é’®æœªæ‰¾åˆ°ï¼Œç­‰å¾…åé‡è¯•");
+                    excutePrompt.textContent = "åˆ·æ–°æŒ‰é’®æœªæ‰¾åˆ°ï¼Œç­‰å¾…åé‡è¯•";
                     setTimeout(startDetection, 1000);
                 }
             }
 
             function onIframeLoaded() {
                 if (!doSelectingCourse) return;
-                console.log("iframe¼ÓÔØÍê³É£¬¼ÌĞø¼ì²â");
+                console.log("iframeåŠ è½½å®Œæˆï¼Œç»§ç»­æ£€æµ‹");
                 console.log("iframe: ", iframe.cloneNode(true));
-                //excutePrompt.textContent = "iframe¼ÓÔØÍê³É£¬¼ÌĞø¼ì²â";
-                // ¸øiframeÄÚÈİÒ»Ğ©Ê±¼äÍêÈ«¼ÓÔØ
+                //excutePrompt.textContent = "iframeåŠ è½½å®Œæˆï¼Œç»§ç»­æ£€æµ‹";
+                // ç»™iframeå†…å®¹ä¸€äº›æ—¶é—´å®Œå…¨åŠ è½½
                 setTimeout(() => {
                     startDetection();
                 }, 100);
@@ -538,7 +539,7 @@
 
             function stopSelecting() {
                 doSelectingCourse = false;
-                startSelectButton.textContent = '¿ªÊ¼ÇÀ¿Î';
+                startSelectButton.textContent = 'å¼€å§‹æŠ¢è¯¾';
                 const iframe = document.getElementsByTagName('iframe')[0];
                 iframe.removeEventListener('load', onIframeLoaded);
 
@@ -560,12 +561,12 @@
         floatingWindow.appendChild(windowBody);
 
 
-        // ¹Ø±Õ´°¿Ú
+        // å…³é—­çª—å£
         closeBtn.addEventListener('click', () => {
             floatingWindow.style.display = 'none';
         });
 
-        // Ê¹´°¿Ú¿ÉÍÏ×§
+        // ä½¿çª—å£å¯æ‹–æ‹½
         let isDragging = false;
         let initialX, initialY;
 
@@ -601,12 +602,12 @@
                 floatingWindow.style.top = '0px';
             }
         }
-        // ½«¸¡¶¯´°¿ÚÌí¼Óµ½bodyÖĞ
+        // å°†æµ®åŠ¨çª—å£æ·»åŠ åˆ°bodyä¸­
         document.body.appendChild(floatingWindow);
         return;
     }
 
-    // ³õÊ¼»¯
+    // åˆå§‹åŒ–
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initTabsListener);
     } else {
@@ -620,29 +621,29 @@
 
             iframe.onload = function () {
                 if (iframeDocument === null) {
-                    throw new DOMException("Ã»ÓĞ»ñÈ¡µ½iframeDocumentÔªËØ¡£")
+                    throw new DOMException("æ²¡æœ‰è·å–åˆ°iframeDocumentå…ƒç´ ã€‚")
                 }
                 waitForElement(iframe.contentDocument, "#header")
                 .then(element => {
-                    console.log('³É¹¦ÕÒµ½ÔªËØ:', element);
-                    // ÔÚÕâÀïÖ´ĞĞÄúµÄ²Ù×÷
+                    console.log('æˆåŠŸæ‰¾åˆ°å…ƒç´ :', element);
+                    // åœ¨è¿™é‡Œæ‰§è¡Œæ‚¨çš„æ“ä½œ
                     var text = element.textContent;
-                    if (text.startsWith("ÏÖÔÚ²»ÊÇÑ¡¿ÎÊ±¼ä")) {
-                        console.log("¼ì²âµ½±êÇ©£ºÏÖÔÚ²»ÊÇÑ¡¿ÎÊ±¼ä");
+                    if (text.startsWith("ç°åœ¨ä¸æ˜¯é€‰è¯¾æ—¶é—´")) {
+                        console.log("æ£€æµ‹åˆ°æ ‡ç­¾ï¼šç°åœ¨ä¸æ˜¯é€‰è¯¾æ—¶é—´");
                         return false;
                     }
-                    console.log("Î´¼ì²âµ½±êÇ©£ºÏÖÔÚ²»ÊÇÑ¡¿ÎÊ±¼ä");
+                    console.log("æœªæ£€æµ‹åˆ°æ ‡ç­¾ï¼šç°åœ¨ä¸æ˜¯é€‰è¯¾æ—¶é—´");
                     return true;
                 })
                     .catch(error => {
                         excutePrompt.textContent = error.message;
-                        console.error('´íÎó:', error.message);
+                        console.error('é”™è¯¯:', error.message);
                 });
             }
 
         }
         catch (ex) {
-            console.log("»ñÈ¡ÔªËØÊ±´íÎó£¬¿ÉÄÜÃ»ÓĞ´ËÔªËØ¡£", ex);
+            console.log("è·å–å…ƒç´ æ—¶é”™è¯¯ï¼Œå¯èƒ½æ²¡æœ‰æ­¤å…ƒç´ ã€‚", ex);
             return false;
         }
     }
@@ -652,14 +653,14 @@
             const element = doc.querySelector(elementId);
 
             const checkElement = () => {
-                console.log("Òª¼ì²éµÄiframe: ", doc);
+                console.log("è¦æ£€æŸ¥çš„iframe: ", doc);
                 attempts++;
                 if (element) {
                     resolve(element);
                 } else if (attempts < maxAttempts) {
                     setTimeout(checkElement, interval);
                 } else {
-                    reject(new Error(`idÎª£º ${elementId} µÄÔªËØÔÚÖ¸¶¨Ê±¼ä£º` + interval + ` ÄÚÎ´ÕÒµ½`));
+                    reject(new Error(`idä¸ºï¼š ${elementId} çš„å…ƒç´ åœ¨æŒ‡å®šæ—¶é—´ï¼š` + interval + ` å†…æœªæ‰¾åˆ°`));
                 }
             };
 
